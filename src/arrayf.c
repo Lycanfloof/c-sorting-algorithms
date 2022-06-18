@@ -65,9 +65,31 @@ void arrayf_bbsort(size_t sz, int *pFirst, bool desc)
         {
             bool cond = !desc ? *(pFirst + j) > *(pFirst + j + 1) : *(pFirst + j) < *(pFirst + j + 1);
             if (cond)
-            {
                 swap((pFirst + j), (pFirst + j + 1));
-            }
         }
+    }
+}
+
+void rcbbsort_iteration(size_t itr, size_t sz, int *pFirst, bool desc)
+{
+    if (itr < sz - 1)
+    {
+        bool cond = !desc ? *(pFirst + itr) > *(pFirst + itr + 1) : *(pFirst + itr) < *(pFirst + itr + 1);
+        if (cond)
+            swap((pFirst + itr), (pFirst + itr + 1));
+        rcbbsort_iteration(itr + 1, sz, pFirst, desc);
+    }
+}
+
+void arrayf_rcbbsort(size_t sz, int *pFirst, bool desc)
+{
+    if (sz <= 1)
+    {
+        return;
+    }
+    else
+    {
+        rcbbsort_iteration(0, sz, pFirst, desc);
+        arrayf_rcbbsort(sz - 1, pFirst, desc);
     }
 }
