@@ -21,6 +21,19 @@ void swap(int *pElementA, int *pElementB)
     *pElementA = tmp;
 }
 
+int *arrayf_copy(size_t sz, int *pFirst, size_t nsz)
+{
+    int *ptr = calloc(nsz, sizeof(*pFirst));
+    if (ptr != NULL)
+    {
+        for (size_t i = 0; i < sz; i++)
+        {
+            *(ptr + i) = *(pFirst + i);
+        }
+    }
+    return ptr;
+}
+
 void arrayf_selsort(size_t sz, int *pFirst, bool desc, bool stable)
 {
     size_t i, j;
@@ -119,4 +132,65 @@ void rcinssort(size_t itr, size_t sz, int *pFirst, bool desc)
 void arrayf_rcinssort(size_t sz, int *pFirst, bool desc)
 {
     rcinssort(1, sz, pFirst, desc);
+}
+
+void merge(int *pFirst, int *pFstHalf, size_t n1, int *pScndHalf, size_t n2, bool desc)
+{
+    size_t fst = 0;
+    size_t scnd = 0;
+    while (fst < n1 || scnd < n2)
+    {
+        bool cond = !desc ? *(pFstHalf + fst) <= *(pScndHalf + scnd) : *(pFstHalf + fst) >= *(pScndHalf + scnd);
+        if ((fst >= n1) || (!(scnd >= n2) && !cond))
+        {
+            *(pFirst + fst + scnd) = *(pScndHalf + scnd);
+            scnd++;
+        }
+        else if ((scnd >= n2) || (!(fst >= n1) && cond))
+        {
+            *(pFirst + fst + scnd) = *(pFstHalf + fst);
+            fst++;
+        }
+    }
+}
+
+bool arrayf_rcmgsort(size_t sz, int *pFirst, bool desc)
+{
+    if (sz > 1)
+    {
+        size_t n2 = sz / 2;
+        size_t n1 = sz - n2;
+        int *pFstHalf = arrayf_copy(n1, pFirst + 0, n1);
+        if (pFstHalf == NULL)
+            return false;
+
+        int *pScndHalf = arrayf_copy(n2, pFirst + n1, n2);
+        if (pScndHalf == NULL)
+        {
+            free(pFstHalf);
+            return false;
+        }
+
+        bool r1 = arrayf_rcmgsort(n1, pFstHalf, desc);
+        bool r2 = arrayf_rcmgsort(n2, pScndHalf, desc);
+
+        if (!(r1 && r2))
+        {
+            return false;
+        }
+
+        merge(pFirst, pFstHalf, n1, pScndHalf, n2, desc);
+
+        free(pFstHalf);
+        pFstHalf = NULL;
+
+        free(pScndHalf);
+        pScndHalf = NULL;
+
+        return true;
+    }
+    else
+    {
+        return true;
+    }
 }

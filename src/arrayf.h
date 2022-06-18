@@ -3,6 +3,15 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdlib.h>
+
+/*
+ * Copies an array into another location in memory.
+ *  size_t -> The size of the array to be copied.
+ *  int * -> The array to be copied.
+ *  size_t -> The size of the new array in memory.
+ */
+int *arrayf_copy(size_t, int *, size_t);
 
 /*
  * (STABLE | UNSTABLE)
@@ -49,5 +58,14 @@ void arrayf_rcbbsort(size_t, int *, bool);
  *  bool -> Sort in descending order? (true | false).
  */
 void arrayf_rcinssort(size_t, int *, bool);
+
+/*
+ * (STABLE)
+ * Sorts the given array with recursive Merge Sort.
+ *  size_t -> The size of the array.
+ *  int * -> The address of the array.
+ *  bool -> Sort in descending order? (true | false).
+ */
+bool arrayf_rcmgsort(size_t, int *, bool);
 
 #endif
