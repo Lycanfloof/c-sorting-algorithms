@@ -41,4 +41,13 @@ void arrayf_bbsort(size_t, int *, bool);
  */
 void arrayf_rcbbsort(size_t, int *, bool);
 
+/*
+ * (STABLE)
+ * Sorts the given array with recursive Insertion Sort.
+ *  size_t -> The size of the array.
+ *  int * -> The address of the array.
+ *  bool -> Sort in descending order? (true | false).
+ */
+void arrayf_rcinssort(size_t, int *, bool);
+
 #endif

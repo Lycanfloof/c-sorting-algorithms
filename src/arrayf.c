@@ -93,3 +93,30 @@ void arrayf_rcbbsort(size_t sz, int *pFirst, bool desc)
         arrayf_rcbbsort(sz - 1, pFirst, desc);
     }
 }
+
+void rcinssort_iteration(size_t itr, size_t sz, int *pFirst, bool desc)
+{
+    bool cond = !desc ? *(pFirst + sz) < *(pFirst + itr) : *(pFirst + sz) > *(pFirst + itr);
+    if (cond)
+        m_left_push((pFirst + sz), sz - itr);
+    else if (itr < sz)
+        rcinssort_iteration(itr + 1, sz, pFirst, desc);
+}
+
+void rcinssort(size_t itr, size_t sz, int *pFirst, bool desc)
+{
+    if (itr >= sz)
+    {
+        return;
+    }
+    else
+    {
+        rcinssort_iteration(0, itr, pFirst, desc);
+        rcinssort(itr + 1, sz, pFirst, desc);
+    }
+}
+
+void arrayf_rcinssort(size_t sz, int *pFirst, bool desc)
+{
+    rcinssort(1, sz, pFirst, desc);
+}
