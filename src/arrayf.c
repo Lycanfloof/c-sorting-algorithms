@@ -160,6 +160,7 @@ bool arrayf_rcmgsort(size_t sz, int *pFirst, bool desc)
     {
         size_t n2 = sz / 2;
         size_t n1 = sz - n2;
+
         int *pFstHalf = arrayf_copy(n1, pFirst + 0, n1);
         if (pFstHalf == NULL)
             return false;
@@ -186,11 +187,6 @@ bool arrayf_rcmgsort(size_t sz, int *pFirst, bool desc)
 
         free(pScndHalf);
         pScndHalf = NULL;
-
-        return true;
     }
-    else
-    {
-        return true;
-    }
+    return true;
 }
