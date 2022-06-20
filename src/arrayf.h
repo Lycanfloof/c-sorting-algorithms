@@ -65,6 +65,7 @@ void arrayf_rcinssort(size_t, int *, bool);
  *  size_t -> The size of the array.
  *  int * -> The address of the array.
  *  bool -> Sort in descending order? (true | false).
+ * Returns TRUE if the array got completely sorted, otherwise it returns FALSE.
  */
 bool arrayf_rcmgsort(size_t, int *, bool);
 

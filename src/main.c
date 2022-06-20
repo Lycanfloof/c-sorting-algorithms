@@ -139,6 +139,6 @@ int main(void)
 
     make_testA(4, func);
     make_testB();
-    
+
     return 0;
 }

@@ -26,7 +26,8 @@ int *arrayf_copy(size_t sz, int *pFirst, size_t nsz)
     int *ptr = calloc(nsz, sizeof(*pFirst));
     if (ptr != NULL)
     {
-        for (size_t i = 0; i < sz; i++)
+        size_t max = sz <= nsz ? sz : nsz;
+        for (size_t i = 0; i < max; i++)
         {
             *(ptr + i) = *(pFirst + i);
         }
@@ -134,59 +135,64 @@ void arrayf_rcinssort(size_t sz, int *pFirst, bool desc)
     rcinssort(1, sz, pFirst, desc);
 }
 
-void merge(int *pFirst, int *pFstHalf, size_t n1, int *pScndHalf, size_t n2, bool desc)
+bool merge(size_t l, size_t m, size_t r, int *pFirst, bool desc)
 {
-    size_t fst = 0;
-    size_t scnd = 0;
-    while (fst < n1 || scnd < n2)
+    bool sorted = false;
+
+    int *larr = arrayf_copy(m - l + 1, pFirst + l, m - l + 1);
+    int *rarr = arrayf_copy(r - m, pFirst + m + 1, r - m);
+
+    if (larr != NULL && rarr != NULL)
     {
-        bool cond = !desc ? *(pFstHalf + fst) <= *(pScndHalf + scnd) : *(pFstHalf + fst) >= *(pScndHalf + scnd);
-        if ((fst >= n1) || (!(scnd >= n2) && !cond))
+        size_t inx = l;
+        size_t linx = 0;
+        size_t rinx = 0;
+
+        while (linx < m - l + 1 || rinx < r - m)
         {
-            *(pFirst + fst + scnd) = *(pScndHalf + scnd);
-            scnd++;
+            bool cond = !desc ? *(larr + linx) <= *(rarr + rinx) : *(larr + linx) >= *(rarr + rinx);
+            if ((rinx >= r - m) || (!(linx >= m - l + 1) && cond))
+            {
+                *(pFirst + inx) = *(larr + linx);
+                inx++;
+                linx++;
+            }
+            else if ((linx >= m - l + 1) || (!(rinx >= r - m) && !cond))
+            {
+                *(pFirst + inx) = *(rarr + rinx);
+                inx++;
+                rinx++;
+            }
         }
-        else if ((scnd >= n2) || (!(fst >= n1) && cond))
-        {
-            *(pFirst + fst + scnd) = *(pFstHalf + fst);
-            fst++;
-        }
+
+        sorted = true;
+    }
+
+    if (larr != NULL)
+        free(larr);
+    if (rarr != NULL)
+        free(rarr);
+
+    return sorted;
+}
+
+bool rcmgsort(size_t l, size_t r, int *pFirst, bool desc)
+{
+    if (l < r)
+    {
+        size_t m = (l + r) / 2;
+        bool r1 = rcmgsort(l, m, pFirst, desc);
+        bool r2 = rcmgsort(m + 1, r, pFirst, desc);
+        bool r3 = merge(l, m, r, pFirst, desc);
+        return r1 && r2 && r3;
+    }
+    else
+    {
+        return true;
     }
 }
 
 bool arrayf_rcmgsort(size_t sz, int *pFirst, bool desc)
 {
-    if (sz > 1)
-    {
-        size_t n2 = sz / 2;
-        size_t n1 = sz - n2;
-
-        int *pFstHalf = arrayf_copy(n1, pFirst + 0, n1);
-        if (pFstHalf == NULL)
-            return false;
-
-        int *pScndHalf = arrayf_copy(n2, pFirst + n1, n2);
-        if (pScndHalf == NULL)
-        {
-            free(pFstHalf);
-            return false;
-        }
-
-        bool r1 = arrayf_rcmgsort(n1, pFstHalf, desc);
-        bool r2 = arrayf_rcmgsort(n2, pScndHalf, desc);
-
-        if (!(r1 && r2))
-        {
-            return false;
-        }
-
-        merge(pFirst, pFstHalf, n1, pScndHalf, n2, desc);
-
-        free(pFstHalf);
-        pFstHalf = NULL;
-
-        free(pScndHalf);
-        pScndHalf = NULL;
-    }
-    return true;
+    return rcmgsort(0, sz - 1, pFirst, desc);
 }
