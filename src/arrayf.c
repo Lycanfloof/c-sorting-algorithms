@@ -1,24 +1,49 @@
 #include "arrayf.h"
 
-void m_left_push(int *pElement, size_t positions)
+void arrayf_swap_and_push(size_t sz, int *pFirst, int *pElementA, int *pElementB)
 {
-    if (positions == 0)
+    bool aout = pElementA < pFirst || pElementA >= (pFirst + sz);
+    bool bout = pElementB < pFirst || pElementB >= (pFirst + sz);
+
+    if (pElementA == pElementB || aout || bout)
         return;
-    int tmp = *pElement;
-    for (int *ptr = pElement; ptr > (pElement - positions); ptr--)
+    else if (pElementA < pElementB)
     {
-        *ptr = *(ptr - 1);
+        int tmp = *pElementA;
+
+        for (size_t i = 0; pElementA + i < pElementB; i++)
+        {
+            *(pElementA + i) = *(pElementA + i + 1);
+        }
+
+        *pElementB = tmp;
     }
-    *(pElement - positions) = tmp;
+    else
+    {
+        int tmp = *pElementA;
+
+        for (size_t i = 0; pElementA - i > pElementB; i++)
+        {
+            *(pElementA - i) = *(pElementA - i - 1);
+        }
+
+        *pElementB = tmp;
+    }
 }
 
-void swap(int *pElementA, int *pElementB)
+void arrayf_swap(size_t sz, int *pFirst, int *pElementA, int *pElementB)
 {
-    if (pElementA == pElementB)
+    bool aout = pElementA < pFirst || pElementA >= (pFirst + sz);
+    bool bout = pElementB < pFirst || pElementB >= (pFirst + sz);
+
+    if (pElementA == pElementB || aout || bout)
         return;
-    int tmp = *pElementB;
-    *pElementB = *pElementA;
-    *pElementA = tmp;
+    else
+    {
+        int tmp = *pElementB;
+        *pElementB = *pElementA;
+        *pElementA = tmp;
+    }
 }
 
 int *arrayf_copy(size_t sz, int *pFirst, size_t nsz)
@@ -47,9 +72,9 @@ void arrayf_selsort(size_t sz, int *pFirst, bool desc, bool stable)
             sl = cond ? j : sl;
         }
         if (stable)
-            m_left_push((pFirst + sl), sl - i);
+            arrayf_swap_and_push(sz, pFirst, (pFirst + sl), (pFirst + i));
         else
-            swap((pFirst + sl), (pFirst + i));
+            arrayf_swap(sz, pFirst, (pFirst + sl), (pFirst + i));
     }
 }
 
@@ -63,7 +88,7 @@ void arrayf_inssort(size_t sz, int *pFirst, bool desc)
             bool cond = !desc ? *(pFirst + i) < *(pFirst + j) : *(pFirst + i) > *(pFirst + j);
             if (cond)
             {
-                m_left_push((pFirst + i), i - j);
+                arrayf_swap_and_push(sz, pFirst, (pFirst + i), (pFirst + j));
                 break;
             }
         }
@@ -79,7 +104,7 @@ void arrayf_bbsort(size_t sz, int *pFirst, bool desc)
         {
             bool cond = !desc ? *(pFirst + j) > *(pFirst + j + 1) : *(pFirst + j) < *(pFirst + j + 1);
             if (cond)
-                swap((pFirst + j), (pFirst + j + 1));
+                arrayf_swap(sz, pFirst, (pFirst + j), (pFirst + j + 1));
         }
     }
 }
@@ -90,7 +115,7 @@ void rcbbsort_iteration(size_t itr, size_t sz, int *pFirst, bool desc)
     {
         bool cond = !desc ? *(pFirst + itr) > *(pFirst + itr + 1) : *(pFirst + itr) < *(pFirst + itr + 1);
         if (cond)
-            swap((pFirst + itr), (pFirst + itr + 1));
+            arrayf_swap(sz, pFirst, (pFirst + itr), (pFirst + itr + 1));
         rcbbsort_iteration(itr + 1, sz, pFirst, desc);
     }
 }
@@ -112,7 +137,7 @@ void rcinssort_iteration(size_t itr, size_t sz, int *pFirst, bool desc)
 {
     bool cond = !desc ? *(pFirst + sz) < *(pFirst + itr) : *(pFirst + sz) > *(pFirst + itr);
     if (cond)
-        m_left_push((pFirst + sz), sz - itr);
+        arrayf_swap_and_push(sz + 1, pFirst, (pFirst + sz), (pFirst + itr));
     else if (itr < sz)
         rcinssort_iteration(itr + 1, sz, pFirst, desc);
 }

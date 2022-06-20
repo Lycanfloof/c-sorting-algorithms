@@ -6,6 +6,24 @@
 #include <stdlib.h>
 
 /*
+ * Inserts an element into some location in the array, pushing the other elements to the side.
+ *  size_t -> The size of the array.
+ *  int * -> The address of the array.
+ *  int * -> The address of the element to be moved.
+ *  int * -> The address in which the element is gonna be inserted.
+ */
+void arrayf_swap_and_push(size_t, int *, int *, int *);
+
+/*
+ * Swaps two elements of the same array.
+ *  size_t -> The size of the array.
+ *  int * -> The address of the array.
+ *  int * -> The address of the first element.
+ *  int * -> The address of the second element.
+ */
+void arrayf_swap(size_t, int *, int *, int *);
+
+/*
  * Copies an array into another location in memory.
  *  size_t -> The size of the array to be copied.
  *  int * -> The array to be copied.
